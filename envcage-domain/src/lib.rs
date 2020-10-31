@@ -22,6 +22,12 @@ pub fn get_all_device(db: &PgConnection) -> Result<Vec<Device>, diesel::result::
     devices.load(db)
 }
 
+pub fn unapproved_devices(db: &PgConnection) -> QueryResult<Vec<Device>> {
+    use crate::schema::devices::dsl::*;
+
+    devices.filter(approved.eq(false)).load(db)
+}
+
 pub fn create_device<'a>(
     db: &PgConnection,
     mac_addr: &'a str,
@@ -39,7 +45,7 @@ pub fn create_device<'a>(
         .get_result(db)
 }
 
-pub fn approve_device<'a>(db: &PgConnection, mac_addr: &'a str) -> QueryResult<Device> {
+pub fn approve_device(db: &PgConnection, mac_addr: &str) -> QueryResult<Device> {
     use schema::devices;
 
     let device = ApprovalDevice {

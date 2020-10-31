@@ -1,7 +1,7 @@
 use super::schema::devices;
 use chrono::prelude::*;
 
-#[derive(Queryable)]
+#[derive(Queryable, Debug)]
 pub struct Device {
     pub id: String,
     pub location: String,
