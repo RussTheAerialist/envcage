@@ -1,4 +1,0 @@
-CREATE TABLE device (
-  id SERIAL PRIMARY KEY,
-  location VARCHAR NOT NULL
-)

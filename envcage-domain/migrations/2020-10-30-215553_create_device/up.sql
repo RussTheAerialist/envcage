@@ -1,0 +1,5 @@
+CREATE TABLE devices (
+  id CHAR(12) PRIMARY KEY,
+  location VARCHAR NOT NULL,
+  approved BOOLEAN DEFAULT false NOT NULL
+)

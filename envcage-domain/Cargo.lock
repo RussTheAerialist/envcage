@@ -180,7 +180,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "envcage-domain"
+name = "envcage"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -189,18 +189,6 @@ dependencies = [
  "env_logger",
  "log",
  "rumqttc",
- "structopt",
-]
-
-[[package]]
-name = "envcage-tools"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dotenv",
- "env_logger",
- "envcage-domain",
- "log",
  "structopt",
 ]
 
