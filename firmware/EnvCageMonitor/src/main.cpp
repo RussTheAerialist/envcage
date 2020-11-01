@@ -4,9 +4,13 @@
 #include <SimpleDHT.h>
 #include <NTPClient.h>
 #include <PubSubClient.h>
+#include "ssid.h"
 
+#ifndef SSID_SET
 const char* ssid = "";
 const char* passwd = "";
+#endif // SSID_SET
+
 const char* broker = "test.mosquitto.org";
 uint16_t brokerPort = 1883;
 int dhtPin = 2; // TODO: Find the right pin
