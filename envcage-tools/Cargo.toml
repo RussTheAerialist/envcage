@@ -26,5 +26,9 @@ name = "eg-approval"
 path = "src/approve.rs"
 
 [[bin]]
-name = "eg-list-devices"
+name = "eg-entries"
+path = "src/list_entries.rs"
+
+[[bin]]
+name = "eg-devices"
 path = "src/main.rs"

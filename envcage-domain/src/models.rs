@@ -1,5 +1,8 @@
 use super::schema::devices;
+use super::schema::envlogs;
+use bigdecimal::BigDecimal;
 use chrono::prelude::*;
+use uuid::Uuid;
 
 #[derive(Queryable, Debug)]
 pub struct Device {
@@ -22,11 +25,21 @@ pub struct ApprovalDevice<'a> {
     pub approved: bool,
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Debug)]
 pub struct EnvLog {
-    pub id: i32,
-    pub device_id: String,
-    pub created: NaiveDateTime, // Always UTC
-    pub temperature: i32,
-    pub humidity: i32,
+    pub id: Uuid,
+    pub device_id: Option<String>,
+    pub created: DateTime<Utc>, // Always UTC
+    pub temperature: BigDecimal,
+    pub humidity: BigDecimal,
+}
+
+#[derive(Insertable)]
+#[table_name = "envlogs"]
+pub struct NewEnvLog<'a> {
+    pub id: Uuid,
+    pub device_id: Option<&'a str>,
+    pub created: DateTime<Utc>,
+    pub temperature: &'a BigDecimal,
+    pub humidity: &'a BigDecimal,
 }

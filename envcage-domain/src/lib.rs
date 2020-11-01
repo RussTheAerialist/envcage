@@ -3,8 +3,13 @@ extern crate diesel;
 #[macro_use]
 extern crate log;
 
+use bigdecimal::BigDecimal;
+use chrono::prelude::*;
+use diesel::debug_query;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
+use uuid::Uuid;
+use uuid::NAMESPACE_URL;
 
 pub mod models;
 pub mod schema;
@@ -20,6 +25,12 @@ pub fn get_all_device(db: &PgConnection) -> Result<Vec<Device>, diesel::result::
     use crate::schema::devices::dsl::*;
 
     devices.load(db)
+}
+
+pub fn log_entries(db: &PgConnection) -> QueryResult<Vec<EnvLog>> {
+    use crate::schema::envlogs::dsl::*;
+
+    envlogs.load(db)
 }
 
 pub fn unapproved_devices(db: &PgConnection) -> QueryResult<Vec<Device>> {
@@ -64,4 +75,26 @@ fn set_device_approval(db: &PgConnection, mac_addr: &str, state: bool) -> QueryR
     diesel::update(&device)
         .set(devices::approved.eq(state))
         .get_result(db)
+}
+pub fn create_log_entry(
+    db: &PgConnection,
+    mac_addr: &str,
+    created: DateTime<Utc>,
+    temperature: &BigDecimal,
+    humidity: &BigDecimal,
+) -> QueryResult<EnvLog> {
+    use schema::envlogs;
+
+    let new = NewEnvLog {
+        id: Uuid::new_v5(
+            &NAMESPACE_URL,
+            &format!("{}/{}/{}", mac_addr, temperature, humidity),
+        ),
+        device_id: Some(mac_addr),
+        created,
+        temperature,
+        humidity,
+    };
+
+    diesel::insert_into(envlogs::table).values(&new).get_result(db)
 }

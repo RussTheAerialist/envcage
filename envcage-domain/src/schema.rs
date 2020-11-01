@@ -8,7 +8,7 @@ table! {
 
 table! {
     envlogs (id) {
-        id -> Int4,
+        id -> Uuid,
         device_id -> Nullable<Bpchar>,
         created -> Timestamptz,
         temperature -> Numeric,

@@ -1,7 +1,8 @@
-use envcage_tools::cmdline;
-use rumqttc::{Client, MqttOptions, QoS, Event, ConnectionError, Packet};
-use structopt::StructOpt;
 use diesel::pg::PgConnection;
+use envcage_domain::create_log_entry;
+use envcage_tools::cmdline;
+use rumqttc::{Client, ConnectionError, Event, MqttOptions, Packet, QoS};
+use structopt::StructOpt;
 
 mod error;
 mod payload;
@@ -9,10 +10,8 @@ mod payload;
 #[derive(StructOpt)]
 struct Opt {
     #[structopt(short, long)]
-    daemon: bool
+    daemon: bool,
 }
-
-
 
 cmdline! { db Opt opt {
     if opt.daemon {
@@ -24,7 +23,9 @@ cmdline! { db Opt opt {
 fn run(db: &PgConnection) -> Result<(), Box<dyn Error>> {
     let host = env::var("MQTT_ADDRESS")?;
     let port = env::var("MQTT_PORT")?.parse()?;
-    let keep_alive = env::var("MQTT_KEEP_ALIVE").or_else::<String, _>(|_| Ok("6".to_owned()))?.parse()?;
+    let keep_alive = env::var("MQTT_KEEP_ALIVE")
+        .or_else::<String, _>(|_| Ok("6".to_owned()))?
+        .parse()?;
     let topic = env::var("MQTT_TOPIC")?;
 
     debug!("Connecting to {}:{}/{}", host, port, topic);
@@ -48,22 +49,40 @@ fn handle_notification(db: &PgConnection, msg: Result<Event, ConnectionError>) {
 
 fn process_published(db: &PgConnection, item: Packet) -> Result<(), Box<dyn Error>> {
     if let Packet::Publish(p) = item {
-        let mac_addr = p.topic.split('/')
-            .nth(1).ok_or_else(|| error::Error::Split(p.topic.to_owned()))?;
+        let mac_addr = p
+            .topic
+            .split('/')
+            .nth(1)
+            .ok_or_else(|| error::Error::Split(p.topic.to_owned()))?;
         let payload = p.payload.to_vec();
         let payload = std::str::from_utf8(&payload)?;
         let payload = payload.parse::<payload::Payload>()?;
 
-        info!("Device Addr {} reporting {:?}", mac_addr, payload);
-     }
+        debug!(
+            "Addr={} T={}F H={}",
+            mac_addr, payload.temperature, payload.humidity
+        );
+        create_log_entry(
+            db,
+            mac_addr,
+            payload.created,
+            &payload.temperature,
+            &payload.humidity,
+        )?;
+    }
 
     Ok(())
 }
 
-fn process_notification(db: &PgConnection, msg: Result<Event, ConnectionError>) -> Result<(), Box<dyn Error>> {
+fn process_notification(
+    db: &PgConnection,
+    msg: Result<Event, ConnectionError>,
+) -> Result<(), Box<dyn Error>> {
     let msg = msg?;
 
-    if let Event::Incoming(item) = msg { process_published(db, item)?; }
+    if let Event::Incoming(item) = msg {
+        process_published(db, item)?;
+    }
 
     Ok(())
 }

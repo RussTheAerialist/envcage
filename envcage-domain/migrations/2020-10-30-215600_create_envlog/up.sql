@@ -1,5 +1,5 @@
 CREATE TABLE envlogs (
-  id SERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY,
   device_id CHAR(12),
   created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT current_timestamp,
   temperature NUMERIC(6, 2) NOT NULL,

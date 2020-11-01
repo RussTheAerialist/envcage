@@ -9,8 +9,10 @@ edition = "2018"
 [dependencies]
 
 dotenv = "0.15.0"
-diesel = { version = "1.4.5", features = [ "postgres" ] }
+diesel = { version = "1.4.5", features = [ "postgres", "numeric", "chrono", "uuid"] }
 log = "0.4.11"
 env_logger = "0.8.1"
 chrono = "0.4.19"
 structopt = "0.3.20"
+bigdecimal = "0.1.2"  # Based on Diesel's required version
+uuid = { version = "0.6.5", features = [ "v5", "serde" ] }
