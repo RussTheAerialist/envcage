@@ -64,5 +64,4 @@ fn set_device_approval(db: &PgConnection, mac_addr: &str, state: bool) -> QueryR
     diesel::update(&device)
         .set(devices::approved.eq(state))
         .get_result(db)
-
 }

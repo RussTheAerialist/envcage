@@ -6,13 +6,13 @@ use structopt::StructOpt;
 
 #[derive(Debug)]
 enum ApprovalState {
-	Approve,
-	Disapprove,
+    Approve,
+    Disapprove,
 }
 
 #[derive(Debug)]
 struct InvalidState {
-	state: String,
+    state: String,
 }
 
 impl Display for InvalidState {
@@ -21,38 +21,38 @@ impl Display for InvalidState {
     }
 }
 
-impl Error for InvalidState {
-
-}
+impl Error for InvalidState {}
 
 impl FromStr for ApprovalState {
     type Err = InvalidState;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-					"approve" => Ok(ApprovalState::Approve),
-					"disapprove" => Ok(ApprovalState::Disapprove),
-					_ => Err(InvalidState { state: s.to_owned() })
-				}
+            "approve" => Ok(ApprovalState::Approve),
+            "disapprove" => Ok(ApprovalState::Disapprove),
+            _ => Err(InvalidState {
+                state: s.to_owned(),
+            }),
+        }
     }
 }
 
 #[derive(Debug, StructOpt)]
 struct Opt {
-	state: ApprovalState,
+    state: ApprovalState,
 
-	mac_addr: String,
+    mac_addr: String,
 }
 
 cmdline! { db Opt opt
-	{
-		use ApprovalState::*;
+    {
+        use ApprovalState::*;
 
-		let mac = &opt.mac_addr;
-		match opt.state {
+        let mac = &opt.mac_addr;
+        match opt.state {
 
-			Approve => approve_device(&db, mac),
-			Disapprove => disapprove_device(&db, mac),
-		}?;
-	}
+            Approve => approve_device(&db, mac),
+            Disapprove => disapprove_device(&db, mac),
+        }?;
+    }
 }
