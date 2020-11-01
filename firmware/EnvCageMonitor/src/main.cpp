@@ -7,8 +7,7 @@
 #include "ssid.h"
 
 #ifndef SSID_SET
-const char* ssid = "";
-const char* passwd = "";
+#error ssid and password are not set, see src/ssid.h.template
 #endif // SSID_SET
 
 const char* broker = "test.mosquitto.org";
