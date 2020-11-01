@@ -22,5 +22,9 @@ name = "eg-unapproved"
 path = "src/list_unapproved.rs"
 
 [[bin]]
+name = "eg-approval"
+path = "src/approve.rs"
+
+[[bin]]
 name = "eg-list-devices"
 path = "src/main.rs"

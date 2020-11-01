@@ -1,5 +1,12 @@
 #[macro_export]
 macro_rules! cmdline {
+ ($db:ident $Opt:ident $opt:ident { $( $body:tt ) *} ) => {
+	cmdline! { $db {
+		let $opt = $Opt::from_args();
+
+		$( $body )*
+	}}
+ };
  ($db:ident { $( $body:tt )* }) => {
 
 #[macro_use]

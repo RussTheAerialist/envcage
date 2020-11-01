@@ -46,6 +46,14 @@ pub fn create_device<'a>(
 }
 
 pub fn approve_device(db: &PgConnection, mac_addr: &str) -> QueryResult<Device> {
+    set_device_approval(db, mac_addr, true)
+}
+
+pub fn disapprove_device(db: &PgConnection, mac_addr: &str) -> QueryResult<Device> {
+    set_device_approval(db, mac_addr, false)
+}
+
+fn set_device_approval(db: &PgConnection, mac_addr: &str, state: bool) -> QueryResult<Device> {
     use schema::devices;
 
     let device = ApprovalDevice {
@@ -54,6 +62,7 @@ pub fn approve_device(db: &PgConnection, mac_addr: &str) -> QueryResult<Device> 
     };
 
     diesel::update(&device)
-        .set(devices::approved.eq(true))
+        .set(devices::approved.eq(state))
         .get_result(db)
+
 }
