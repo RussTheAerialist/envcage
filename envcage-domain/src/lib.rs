@@ -5,7 +5,6 @@ extern crate log;
 
 use bigdecimal::BigDecimal;
 use chrono::prelude::*;
-use diesel::debug_query;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use uuid::Uuid;
@@ -96,5 +95,7 @@ pub fn create_log_entry(
         humidity,
     };
 
-    diesel::insert_into(envlogs::table).values(&new).get_result(db)
+    diesel::insert_into(envlogs::table)
+        .values(&new)
+        .get_result(db)
 }
